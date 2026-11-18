@@ -1,14 +1,1185 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    html, body { margin: 0; height: 100%; overflow: hidden; }
-    iframe { width: 100%; height: 100%; border: 0; display: block; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundExplore — Music Charts & Previews</title>
+    <meta name="description" content="Discover global music charts, search tracks, albums, artists, and listen to 30-second audio previews.">
+    <meta property="og:title" content="SoundExplore — Music Charts & Previews">
+    <meta property="og:description" content="Explore trending tracks, albums, and playlists with instant audio previews.">
+    <meta property="og:type" content="website">
+
+    <style>
+        :root {
+            --bg: #0b0d12;
+            --surface: #141821;
+            --surface-hover: #1b212e;
+            --border: #232a3b;
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --gold: #f59e0b;
+            --tg: #229ed9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            padding-bottom: 100px;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: rgba(11, 13, 18, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-inner {
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 14px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 14px;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 19px;
+            cursor: pointer;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent), #ec4899);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 220px;
+            max-width: 440px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .search-box input {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent);
+        }
+
+        .search-box button {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 0 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .search-box button:hover {
+            background: var(--accent-hover);
+        }
+
+        .portal-btn {
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 18px rgba(245, 158, 11, 0.25);
+            transition: transform 0.15s ease, filter 0.15s ease;
+            white-space: nowrap;
+            text-decoration: none;
+        }
+
+        .portal-btn:hover {
+            filter: brightness(1.08);
+            transform: translateY(-1px);
+        }
+
+        main {
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .portal-banner {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(99, 102, 241, 0.12));
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .portal-banner-text h2 {
+            font-size: 16px;
+            margin-bottom: 3px;
+        }
+
+        .portal-banner-text p {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 22px;
+        }
+
+        .tab {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+        }
+
+        .tab:hover {
+            color: var(--text);
+            border-color: #3b4661;
+        }
+
+        .tab.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .section-title {
+            font-size: 19px;
+            font-weight: 700;
+            margin: 26px 0 14px;
+        }
+
+        .section-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .track-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .track-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            border-radius: 12px;
+            transition: background 0.15s ease;
+        }
+
+        .track-row:hover {
+            background: var(--surface-hover);
+        }
+
+        .track-row.playing {
+            border-color: var(--accent);
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .cover-wrap {
+            position: relative;
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            background: #202634;
+        }
+
+        .cover-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .play-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .cover-wrap:hover .play-overlay,
+        .track-row.playing .play-overlay {
+            opacity: 1;
+        }
+
+        .track-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .track-title {
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .track-artist {
+            font-size: 13px;
+            color: var(--muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .track-duration {
+            font-size: 13px;
+            color: var(--muted);
+            margin-right: 6px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+
+        .card:hover {
+            background: var(--surface-hover);
+            transform: translateY(-2px);
+        }
+
+        .card-img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            background: #202634;
+        }
+
+        .card-img.round {
+            border-radius: 50%;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+            cursor: pointer;
+        }
+
+        .card-sub {
+            font-size: 12px;
+            color: var(--muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 12px;
+        }
+
+        .dl-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: rgba(99, 102, 241, 0.15);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.35);
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .dl-btn:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        .card .dl-btn {
+            margin-top: auto;
+            width: 100%;
+        }
+
+        .loading, .empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px);
+            z-index: 60;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal-backdrop.open {
+            display: flex;
+        }
+
+        #dlModalBackdrop {
+            z-index: 75;
+        }
+
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 640px;
+            max-height: 82vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .modal.compact {
+            max-width: 460px;
+        }
+
+        .modal-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .modal-header img {
+            width: 56px;
+            height: 56px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #202634;
+            flex-shrink: 0;
+        }
+
+        .modal-header-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .modal-header-info h3 {
+            font-size: 16px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .modal-header-info p {
+            font-size: 13px;
+            color: var(--muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            font-size: 24px;
+            line-height: 1;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        .modal-close:hover {
+            color: var(--text);
+        }
+
+        .modal-body {
+            padding: 18px 20px;
+            overflow-y: auto;
+        }
+
+        .choice-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .choice-card {
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .choice-card.premium {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(234, 88, 12, 0.06));
+            border-color: rgba(245, 158, 11, 0.45);
+        }
+
+        .choice-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .choice-title {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .badge.free {
+            background: rgba(34, 158, 217, 0.16);
+            color: #5bc0f8;
+        }
+
+        .badge.prem {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+
+        .choice-desc {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .choice-btn {
+            width: 100%;
+            padding: 11px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            display: block;
+            transition: filter 0.15s ease;
+        }
+
+        .choice-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .choice-btn.tg {
+            background: var(--tg);
+            color: #fff;
+        }
+
+        .choice-btn.prem {
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            color: #fff;
+        }
+
+        .player {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background: rgba(20, 24, 33, 0.96);
+            backdrop-filter: blur(14px);
+            border-top: 1px solid var(--border);
+            padding: 10px 20px;
+            display: none;
+        }
+
+        .player.visible {
+            display: block;
+        }
+
+        .player-inner {
+            max-width: 1160px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .player-track {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 180px;
+            max-width: 260px;
+        }
+
+        .player-track img {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .player-controls {
+            flex: 1;
+            min-width: 220px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .play-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: none;
+            background: var(--accent);
+            color: #fff;
+            font-size: 15px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .seek-bar {
+            flex: 1;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .time-label {
+            font-size: 12px;
+            color: var(--muted);
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 640px) {
+            .track-duration { display: none; }
+            .player-track { max-width: 100%; width: 100%; }
+            .portal-banner { padding: 14px; }
+        }
+    </style>
 </head>
 <body>
-  <iframe src="https://nuts.denuts.workers.dev/"></iframe>
+
+<header>
+    <div class="header-inner">
+        <a class="brand" id="homeBtn">
+            <div class="brand-icon">♫</div>
+            <span>SoundExplore</span>
+        </a>
+
+        <form class="search-box" id="searchForm">
+            <input type="text" id="searchInput" placeholder="Search tracks, albums, artists..." autocomplete="off">
+            <button type="submit">Search</button>
+        </form>
+
+        <button class="portal-btn" onclick="openPayment()">
+            ★ Get Premium
+        </button>
+    </div>
+</header>
+
+<main>
+    <div class="portal-banner">
+        <div class="portal-banner-text">
+            <h2>★ Premium Access (PayPal & Crypto)</h2>
+            <p>Listen to 30s previews here, download free via Telegram bot, or get Premium directly via PayPal or Crypto for FLAC & no limits.</p>
+        </div>
+        <button class="portal-btn" onclick="openPayment()">
+            Go to Payment →
+        </button>
+    </div>
+
+    <div class="tabs" id="tabs">
+        <button class="tab active" data-tab="charts">Trending Charts</button>
+        <button class="tab" data-tab="track">Tracks</button>
+        <button class="tab" data-tab="album">Albums</button>
+        <button class="tab" data-tab="artist">Artists</button>
+        <button class="tab" data-tab="playlist">Playlists</button>
+    </div>
+
+    <div id="content">
+        <div class="loading">Loading music catalog...</div>
+    </div>
+</main>
+
+<div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal">
+        <div class="modal-header">
+            <img id="modalCover" src="" alt="">
+            <div class="modal-header-info">
+                <h3 id="modalTitle"></h3>
+                <p id="modalSub"></p>
+            </div>
+            <button id="modalDl" class="dl-btn">↓ Download</button>
+            <button class="modal-close" id="modalClose">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="dlModalBackdrop">
+    <div class="modal compact">
+        <div class="modal-header">
+            <img id="dlModalCover" src="" alt="">
+            <div class="modal-header-info">
+                <h3 id="dlModalTitle">Download Options</h3>
+                <p id="dlModalSub"></p>
+            </div>
+            <button class="modal-close" id="dlModalClose">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="choice-list">
+                <div class="choice-card">
+                    <div class="choice-top">
+                        <span class="choice-title">Free via Telegram Bot</span>
+                        <span class="badge free">Free</span>
+                    </div>
+                    <p class="choice-desc">
+                        Download this item for free in our Telegram bot (standard limits apply).
+                    </p>
+                    <a id="dlTgLink" class="choice-btn tg" href="#" target="_blank" rel="noopener">
+                        Open in Telegram Bot →
+                    </a>
+                </div>
+
+                <div class="choice-card premium">
+                    <div class="choice-top">
+                        <span class="choice-title">Premium Access</span>
+                        <span class="badge prem">PayPal / Crypto</span>
+                    </div>
+                    <p class="choice-desc">
+                        Unlock lossless FLAC quality, batch downloads, and skip Telegram Stars commission fees.
+                    </p>
+                    <button class="choice-btn prem" onclick="openPayment()">
+                        Go to Payment →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="player" id="player">
+    <div class="player-inner">
+        <div class="player-track">
+            <img id="playerCover" src="" alt="">
+            <div class="track-info">
+                <div class="track-title" id="playerTitle">—</div>
+                <div class="track-artist" id="playerArtist">—</div>
+            </div>
+        </div>
+
+        <div class="player-controls">
+            <button class="play-btn" id="playerPlayBtn">▶</button>
+            <input type="range" class="seek-bar" id="seekBar" min="0" max="30" value="0" step="0.1">
+            <span class="time-label" id="timeLabel">0:00 / 0:30</span>
+        </div>
+
+        <button id="playerDl" class="dl-btn">↓ Download</button>
+    </div>
+</div>
+
+<audio id="audioEl"></audio>
+
+<script>
+    const PAYMENT_TARGET_B64 = 'L251dHMuaHRtbA==';
+    const BOT_USERNAME = 'deezload2bot';
+    const PREFIXES = {
+        track: 'deezertrack',
+        album: 'deezeralbum',
+        playlist: 'deezerplaylist',
+        artist: 'deezerartist'
+    };
+
+    function openPayment() {
+        window.location.href = atob(PAYMENT_TARGET_B64);
+    }
+
+    function botLink(type, id) {
+        return `https://t.me/${BOT_USERNAME}?start=${PREFIXES[type]}${id}`;
+    }
+
+    let cbCounter = 0;
+    function deezerJSONP(endpoint) {
+        return new Promise((resolve, reject) => {
+            const cbName = 'dz_cb_' + (++cbCounter) + '_' + Date.now();
+            const sep = endpoint.includes('?') ? '&' : '?';
+            const script = document.createElement('script');
+            const timer = setTimeout(() => {
+                cleanup();
+                reject(new Error('Request timeout'));
+            }, 10000);
+
+            function cleanup() {
+                clearTimeout(timer);
+                delete window[cbName];
+                if (script.parentNode) script.parentNode.removeChild(script);
+            }
+
+            window[cbName] = (data) => {
+                cleanup();
+                if (data && data.error) reject(new Error(data.error.message || 'API error'));
+                else resolve(data);
+            };
+
+            script.src = `https://api.deezer.com${endpoint}${sep}output=jsonp&callback=${cbName}`;
+            script.onerror = () => {
+                cleanup();
+                reject(new Error('Network error'));
+            };
+            document.body.appendChild(script);
+        });
+    }
+
+    function esc(str) {
+        return String(str ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function encodePayload(obj) {
+        return encodeURIComponent(JSON.stringify(obj));
+    }
+
+    function fmtDuration(sec) {
+        const m = Math.floor((sec || 0) / 60);
+        const s = Math.floor((sec || 0) % 60);
+        return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    let activeTab = 'charts';
+    let currentQuery = '';
+    let currentTrackId = null;
+    let currentPlayerItem = null;
+    let currentModalItem = null;
+
+    const audio = document.getElementById('audioEl');
+    const player = document.getElementById('player');
+    const playerPlayBtn = document.getElementById('playerPlayBtn');
+    const seekBar = document.getElementById('seekBar');
+    const timeLabel = document.getElementById('timeLabel');
+
+    const dlModalBackdrop = document.getElementById('dlModalBackdrop');
+    document.getElementById('dlModalClose').onclick = () => dlModalBackdrop.classList.remove('open');
+    dlModalBackdrop.onclick = (e) => {
+        if (e.target === dlModalBackdrop) dlModalBackdrop.classList.remove('open');
+    };
+
+    function openDownloadModal(item) {
+        document.getElementById('dlModalCover').src = item.cover || '';
+        document.getElementById('dlModalTitle').textContent = item.title || 'Download Options';
+        document.getElementById('dlModalSub').textContent = item.sub || item.type;
+        document.getElementById('dlTgLink').href = botLink(item.type, item.id);
+        dlModalBackdrop.classList.add('open');
+    }
+
+    window.openDlFromPayload = function(encoded) {
+        openDownloadModal(JSON.parse(decodeURIComponent(encoded)));
+    };
+
+    function playTrack(track) {
+        if (!track.preview) {
+            alert('No 30s preview available for this track.');
+            return;
+        }
+        if (currentTrackId === track.id) {
+            if (audio.paused) audio.play();
+            else audio.pause();
+            return;
+        }
+
+        currentTrackId = track.id;
+        currentPlayerItem = {
+            type: 'track',
+            id: track.id,
+            title: track.title,
+            sub: `Track • ${track.artist}`,
+            cover: track.cover
+        };
+
+        audio.src = track.preview;
+        audio.play();
+
+        document.getElementById('playerCover').src = track.cover || '';
+        document.getElementById('playerTitle').textContent = track.title || 'Unknown';
+        document.getElementById('playerArtist').textContent = track.artist || 'Unknown';
+        player.classList.add('visible');
+        updatePlayingUI();
+    }
+
+    document.getElementById('playerDl').addEventListener('click', () => {
+        if (currentPlayerItem) openDownloadModal(currentPlayerItem);
+    });
+
+    function updatePlayingUI() {
+        playerPlayBtn.textContent = audio.paused ? '▶' : '❚❚';
+        document.querySelectorAll('.track-row').forEach(row => {
+            const isThis = Number(row.dataset.id) === currentTrackId;
+            row.classList.toggle('playing', isThis);
+            const icon = row.querySelector('.play-overlay');
+            if (icon) icon.textContent = (isThis && !audio.paused) ? '❚❚' : '▶';
+        });
+    }
+
+    playerPlayBtn.addEventListener('click', () => {
+        if (audio.paused) audio.play();
+        else audio.pause();
+    });
+
+    audio.addEventListener('play', updatePlayingUI);
+    audio.addEventListener('pause', updatePlayingUI);
+    audio.addEventListener('ended', updatePlayingUI);
+    audio.addEventListener('timeupdate', () => {
+        const dur = audio.duration || 30;
+        seekBar.max = dur;
+        seekBar.value = audio.currentTime;
+        timeLabel.textContent = `${fmtDuration(audio.currentTime)} / ${fmtDuration(dur)}`;
+    });
+
+    seekBar.addEventListener('input', () => {
+        audio.currentTime = seekBar.value;
+    });
+
+    function renderTrackRow(t, fallbackCover = '') {
+        const cover = (t.album && t.album.cover_medium) || fallbackCover || '';
+        const artist = (t.artist && t.artist.name) || 'Unknown Artist';
+        const playPayload = encodePayload({
+            id: t.id,
+            title: t.title,
+            artist,
+            cover,
+            preview: t.preview
+        });
+        const dlPayload = encodePayload({
+            type: 'track',
+            id: t.id,
+            title: t.title,
+            sub: `Track • ${artist}`,
+            cover
+        });
+
+        return `
+            <div class="track-row ${currentTrackId === t.id ? 'playing' : ''}" data-id="${t.id}">
+                <div class="cover-wrap" onclick="playFromPayload('${playPayload}')">
+                    <img src="${esc(cover)}" alt="" loading="lazy">
+                    <div class="play-overlay">${currentTrackId === t.id && !audio.paused ? '❚❚' : '▶'}</div>
+                </div>
+                <div class="track-info">
+                    <div class="track-title">${esc(t.title)}</div>
+                    <div class="track-artist">${esc(artist)}</div>
+                </div>
+                <span class="track-duration">${fmtDuration(t.duration)}</span>
+                <button class="dl-btn" onclick="openDlFromPayload('${dlPayload}')">↓ Download</button>
+            </div>
+        `;
+    }
+
+    window.playFromPayload = function(encoded) {
+        playTrack(JSON.parse(decodeURIComponent(encoded)));
+    };
+
+    function renderAlbums(list) {
+        return `<div class="card-grid">` + list.map(a => {
+            const artist = a.artist ? a.artist.name : 'Album';
+            const dlPayload = encodePayload({
+                type: 'album',
+                id: a.id,
+                title: a.title,
+                sub: `Album • ${artist}`,
+                cover: a.cover_medium
+            });
+            return `
+                <div class="card">
+                    <img class="card-img" src="${esc(a.cover_medium)}" alt="" loading="lazy" onclick="openCollection('album', ${a.id})">
+                    <div class="card-title" onclick="openCollection('album', ${a.id})">${esc(a.title)}</div>
+                    <div class="card-sub">${esc(artist)}</div>
+                    <button class="dl-btn" onclick="openDlFromPayload('${dlPayload}')">↓ Download</button>
+                </div>
+            `;
+        }).join('') + `</div>`;
+    }
+
+    function renderArtists(list) {
+        return `<div class="card-grid">` + list.map(a => {
+            const dlPayload = encodePayload({
+                type: 'artist',
+                id: a.id,
+                title: a.name,
+                sub: 'Artist Discography',
+                cover: a.picture_medium
+            });
+            return `
+                <div class="card">
+                    <img class="card-img round" src="${esc(a.picture_medium)}" alt="" loading="lazy" onclick="openCollection('artist', ${a.id})">
+                    <div class="card-title" onclick="openCollection('artist', ${a.id})">${esc(a.name)}</div>
+                    <div class="card-sub">Artist</div>
+                    <button class="dl-btn" onclick="openDlFromPayload('${dlPayload}')">↓ Download</button>
+                </div>
+            `;
+        }).join('') + `</div>`;
+    }
+
+    function renderPlaylists(list) {
+        return `<div class="card-grid">` + list.map(p => {
+            const sub = p.nb_tracks ? `${p.nb_tracks} tracks` : 'Playlist';
+            const dlPayload = encodePayload({
+                type: 'playlist',
+                id: p.id,
+                title: p.title,
+                sub: `Playlist • ${sub}`,
+                cover: p.picture_medium
+            });
+            return `
+                <div class="card">
+                    <img class="card-img" src="${esc(p.picture_medium)}" alt="" loading="lazy" onclick="openCollection('playlist', ${p.id})">
+                    <div class="card-title" onclick="openCollection('playlist', ${p.id})">${esc(p.title)}</div>
+                    <div class="card-sub">${esc(sub)}</div>
+                    <button class="dl-btn" onclick="openDlFromPayload('${dlPayload}')">↓ Download</button>
+                </div>
+            `;
+        }).join('') + `</div>`;
+    }
+
+    async function loadContent() {
+        const content = document.getElementById('content');
+        content.innerHTML = `<div class="loading">Loading...</div>`;
+
+        try {
+            if (!currentQuery) {
+                const chart = await deezerJSONP('/chart?limit=12');
+                if (activeTab === 'charts') {
+                    content.innerHTML = `
+                        <div class="section-title">Top Tracks</div>
+                        <div class="track-list">${(chart.tracks?.data || []).map(t => renderTrackRow(t)).join('')}</div>
+                        <div class="section-title">Top Albums</div>
+                        ${renderAlbums(chart.albums?.data || [])}
+                        <div class="section-title">Top Artists</div>
+                        ${renderArtists(chart.artists?.data || [])}
+                        <div class="section-title">Top Playlists</div>
+                        ${renderPlaylists(chart.playlists?.data || [])}
+                    `;
+                } else if (activeTab === 'track') {
+                    content.innerHTML = `<div class="track-list">${(chart.tracks?.data || []).map(t => renderTrackRow(t)).join('')}</div>`;
+                } else if (activeTab === 'album') {
+                    content.innerHTML = renderAlbums(chart.albums?.data || []);
+                } else if (activeTab === 'artist') {
+                    content.innerHTML = renderArtists(chart.artists?.data || []);
+                } else if (activeTab === 'playlist') {
+                    content.innerHTML = renderPlaylists(chart.playlists?.data || []);
+                }
+            } else {
+                const q = encodeURIComponent(currentQuery);
+                if (activeTab === 'charts' || activeTab === 'track') {
+                    const [tracks, albums] = activeTab === 'charts'
+                        ? await Promise.all([
+                            deezerJSONP(`/search/track?q=${q}&limit=10`),
+                            deezerJSONP(`/search/album?q=${q}&limit=6`)
+                        ])
+                        : [await deezerJSONP(`/search/track?q=${q}&limit=20`), null];
+
+                    let html = `<div class="section-title">Tracks for "${esc(currentQuery)}"</div>`;
+                    html += tracks.data?.length
+                        ? `<div class="track-list">${tracks.data.map(t => renderTrackRow(t)).join('')}</div>`
+                        : `<div class="empty">No tracks found.</div>`;
+
+                    if (albums && albums.data?.length) {
+                        html += `<div class="section-title">Albums</div>` + renderAlbums(albums.data);
+                    }
+                    content.innerHTML = html;
+                } else {
+                    const res = await deezerJSONP(`/search/${activeTab}?q=${q}&limit=18`);
+                    if (!res.data?.length) {
+                        content.innerHTML = `<div class="empty">Nothing found for "${esc(currentQuery)}".</div>`;
+                    } else if (activeTab === 'album') {
+                        content.innerHTML = renderAlbums(res.data);
+                    } else if (activeTab === 'artist') {
+                        content.innerHTML = renderArtists(res.data);
+                    } else if (activeTab === 'playlist') {
+                        content.innerHTML = renderPlaylists(res.data);
+                    }
+                }
+            }
+            updatePlayingUI();
+        } catch (err) {
+            content.innerHTML = `<div class="empty">Could not load catalog (${esc(err.message)}). Please try again.</div>`;
+        }
+    }
+
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    document.getElementById('modalClose').onclick = () => modalBackdrop.classList.remove('open');
+    modalBackdrop.onclick = (e) => {
+        if (e.target === modalBackdrop) modalBackdrop.classList.remove('open');
+    };
+
+    document.getElementById('modalDl').addEventListener('click', () => {
+        if (currentModalItem) openDownloadModal(currentModalItem);
+    });
+
+    window.openCollection = async function(type, id) {
+        const modalBody = document.getElementById('modalBody');
+        document.getElementById('modalTitle').textContent = 'Loading...';
+        document.getElementById('modalSub').textContent = '';
+        document.getElementById('modalCover').src = '';
+        currentModalItem = { type, id, title: 'Collection', sub: type, cover: '' };
+
+        modalBody.innerHTML = `<div class="loading">Loading tracks...</div>`;
+        modalBackdrop.classList.add('open');
+
+        try {
+            if (type === 'artist') {
+                const [info, top] = await Promise.all([
+                    deezerJSONP(`/artist/${id}`),
+                    deezerJSONP(`/artist/${id}/top?limit=15`)
+                ]);
+                const cover = info.picture_medium || '';
+                document.getElementById('modalCover').src = cover;
+                document.getElementById('modalTitle').textContent = info.name;
+                document.getElementById('modalSub').textContent = 'Top Tracks';
+                currentModalItem = { type, id, title: info.name, sub: 'Artist Discography', cover };
+                modalBody.innerHTML = `<div class="track-list">${(top.data || []).map(t => renderTrackRow(t)).join('')}</div>`;
+            } else {
+                const info = await deezerJSONP(`/${type}/${id}`);
+                const cover = info.cover_medium || info.picture_medium || '';
+                const sub = type === 'album'
+                    ? `Album • ${info.artist?.name || 'Various'}`
+                    : `Playlist • ${info.nb_tracks || ''} tracks`;
+                document.getElementById('modalCover').src = cover;
+                document.getElementById('modalTitle').textContent = info.title;
+                document.getElementById('modalSub').textContent = sub;
+                currentModalItem = { type, id, title: info.title, sub, cover };
+                modalBody.innerHTML = `<div class="track-list">${(info.tracks?.data || []).map(t => renderTrackRow(t, cover)).join('')}</div>`;
+            }
+            updatePlayingUI();
+        } catch (err) {
+            modalBody.innerHTML = `<div class="empty">Failed to load tracks.</div>`;
+        }
+    };
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (dlModalBackdrop.classList.contains('open')) dlModalBackdrop.classList.remove('open');
+            else if (modalBackdrop.classList.contains('open')) modalBackdrop.classList.remove('open');
+        }
+    });
+
+    document.getElementById('tabs').addEventListener('click', (e) => {
+        const btn = e.target.closest('.tab');
+        if (!btn) return;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        activeTab = btn.dataset.tab;
+        loadContent();
+    });
+
+    document.getElementById('searchForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        currentQuery = document.getElementById('searchInput').value.trim();
+        loadContent();
+    });
+
+    document.getElementById('homeBtn').addEventListener('click', () => {
+        currentQuery = '';
+        document.getElementById('searchInput').value = '';
+        activeTab = 'charts';
+        document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'charts'));
+        loadContent();
+    });
+
+    loadContent();
+</script>
+
 </body>
 </html>

@@ -405,10 +405,6 @@
             display: flex;
         }
 
-        #dlModalBackdrop {
-            z-index: 75;
-        }
-
         .modal {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -420,10 +416,6 @@
             flex-direction: column;
             overflow: hidden;
             box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
-        }
-
-        .modal.compact {
-            max-width: 460px;
         }
 
         .modal-header {
@@ -480,91 +472,6 @@
         .modal-body {
             padding: 18px 20px;
             overflow-y: auto;
-        }
-
-        .choice-list {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .choice-card {
-            background: rgba(255, 255, 255, 0.025);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .choice-card.premium {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(234, 88, 12, 0.06));
-            border-color: rgba(245, 158, 11, 0.45);
-        }
-
-        .choice-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .choice-title {
-            font-size: 15px;
-            font-weight: 700;
-        }
-
-        .badge {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 3px 9px;
-            border-radius: 999px;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-        }
-
-        .badge.free {
-            background: rgba(34, 158, 217, 0.16);
-            color: #5bc0f8;
-        }
-
-        .badge.prem {
-            background: rgba(245, 158, 11, 0.2);
-            color: #fbbf24;
-        }
-
-        .choice-desc {
-            font-size: 13px;
-            color: var(--muted);
-        }
-
-        .choice-btn {
-            width: 100%;
-            padding: 11px 16px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 700;
-            text-align: center;
-            text-decoration: none;
-            cursor: pointer;
-            border: none;
-            display: block;
-            transition: filter 0.15s ease;
-        }
-
-        .choice-btn:hover {
-            filter: brightness(1.1);
-        }
-
-        .choice-btn.tg {
-            background: var(--tg);
-            color: #fff;
-        }
-
-        .choice-btn.prem {
-            background: linear-gradient(135deg, #f59e0b, #ea580c);
-            color: #fff;
         }
 
         .player {
@@ -707,48 +614,6 @@
     </div>
 </div>
 
-<div class="modal-backdrop" id="dlModalBackdrop">
-    <div class="modal compact">
-        <div class="modal-header">
-            <img id="dlModalCover" src="" alt="">
-            <div class="modal-header-info">
-                <h3 id="dlModalTitle">Download Options</h3>
-                <p id="dlModalSub"></p>
-            </div>
-            <button class="modal-close" id="dlModalClose">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div class="choice-list">
-                <div class="choice-card">
-                    <div class="choice-top">
-                        <span class="choice-title">Free via Telegram Bot</span>
-                        <span class="badge free">Free</span>
-                    </div>
-                    <p class="choice-desc">
-                        Download this item for free in our Telegram bot.
-                    </p>
-                    <a id="dlTgLink" class="choice-btn tg" href="#" target="_blank" rel="noopener">
-                        Open in Telegram Bot →
-                    </a>
-                </div>
-
-                <div class="choice-card premium">
-                    <div class="choice-top">
-                        <span class="choice-title">Premium Access</span>
-                        <span class="badge prem">PayPal / Crypto</span>
-                    </div>
-                    <p class="choice-desc">
-                        Unlock lossless FLAC quality, batch downloads, and skip Telegram Stars commission fees.
-                    </p>
-                    <button class="choice-btn prem" onclick="openPayment()">
-                        Go to Payment →
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="player" id="player">
     <div class="player-inner">
         <div class="player-track">
@@ -852,18 +717,8 @@
     const seekBar = document.getElementById('seekBar');
     const timeLabel = document.getElementById('timeLabel');
 
-    const dlModalBackdrop = document.getElementById('dlModalBackdrop');
-    document.getElementById('dlModalClose').onclick = () => dlModalBackdrop.classList.remove('open');
-    dlModalBackdrop.onclick = (e) => {
-        if (e.target === dlModalBackdrop) dlModalBackdrop.classList.remove('open');
-    };
-
     function openDownloadModal(item) {
-        document.getElementById('dlModalCover').src = item.cover || '';
-        document.getElementById('dlModalTitle').textContent = item.title || 'Download Options';
-        document.getElementById('dlModalSub').textContent = item.sub || item.type;
-        document.getElementById('dlTgLink').href = botLink(item.type, item.id);
-        dlModalBackdrop.classList.add('open');
+        window.open(botLink(item.type, item.id), '_blank', 'noopener');
     }
 
     window.openDlFromPayload = function(encoded) {
@@ -1149,9 +1004,8 @@
     };
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            if (dlModalBackdrop.classList.contains('open')) dlModalBackdrop.classList.remove('open');
-            else if (modalBackdrop.classList.contains('open')) modalBackdrop.classList.remove('open');
+        if (e.key === 'Escape' && modalBackdrop.classList.contains('open')) {
+            modalBackdrop.classList.remove('open');
         }
     });
 
